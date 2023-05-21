@@ -3,10 +3,12 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors";
 import authRoute from "./routes/auth.js";
+import chatRoute from "./routes/aichat.js";
+
 mongoose.set("strictQuery", true);
-const app = express();
 
 dotenv.config();
+const app = express();
 
 const connect = async () => {
   try {
@@ -26,6 +28,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/auth", authRoute);
+app.use("/chat", chatRoute);
 
 app.use((err, req, res, next) => {
   const errorStatus = err.status || 500;
