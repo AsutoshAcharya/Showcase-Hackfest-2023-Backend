@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.1.0",
     "nodemon": "^2.0.22",
-    "openai": "^3.2.1"
+    "openai": "^3.2.1",
+    "stripe": "^12.7.0"
   }
 }

@@ -5,7 +5,7 @@ import cors from "cors";
 import authRoute from "./routes/auth.js";
 import chatRoute from "./routes/aichat.js";
 import { Configuration, OpenAIApi } from "openai";
-
+import Stripe from "stripe";
 mongoose.set("strictQuery", true);
 
 dotenv.config();
@@ -56,9 +56,42 @@ mongoose.connection.on("disconnected", () => {
 //middleware
 app.use(cors());
 app.use(express.json());
-
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 app.use("/auth", authRoute);
 app.use("/chat", aiChat);
+
+app.post("/checkout", async (req, res) => {
+  // const items = req.body; //in case of multiple courses in cart
+  // const lineItems = []; //in case of multiple courses in cart
+  const course = req.body;
+  // console.log(items);
+  //in case of multiple courses in cart
+  // items.forEach((item) => {
+  //   lineItems.push({
+  //     price: item.id,
+  //     quantity: 1,
+  //   });
+  // });
+
+  const session = await stripe.checkout.sessions.create({
+    line_items: [
+      {
+        price: course.id,
+        quantity: 1,
+      },
+    ],
+    mode: "payment",
+    success_url: "https://showcase-plus.netlify.app/payment/successful",
+    cancel_url: "https://showcase-plus.netlify.app/payment/failed",
+  });
+
+  res.send(
+    JSON.stringify({
+      url: session.url,
+    })
+  );
+  // res.send("Completed");
+});
 
 app.use((err, req, res, next) => {
   const errorStatus = err.status || 500;
